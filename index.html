@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AS QR Master - AS Industry</title>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- jsQR for Scanning -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --indigo-light: #eef2ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100-vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        /* Header Styles */
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .logo-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
+            margin-bottom: 1rem;
+            transform: rotate(-2deg);
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Tabs Styles */
+        .tabs-container {
+            display: flex;
+            padding: 0.4rem;
+            background-color: rgba(226, 232, 240, 0.6);
+            border-radius: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            background: transparent;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background-color: white;
+            color: var(--primary);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Main Card */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 1.8rem;
+            padding: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        label {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            background-color: #f1f5f9;
+            min-height: 120px;
+            outline: none;
+            transition: ring 0.2s;
+            resize: none;
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--indigo-light);
+        }
+
+        /* Buttons */
+        .btn-ai {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            color: var(--primary);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            border-radius: 0.5rem;
+        }
+
+        .btn-ai:hover { background-color: var(--indigo-light); }
+
+        .btn-primary {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            font-weight: 700;
+            padding: 1rem;
+            border: none;
+            border-radius: 1.25rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+            transition: transform 0.1s, background-color 0.2s;
+        }
+
+        .btn-primary:hover { background-color: var(--primary-hover); }
+        .btn-primary:active { transform: scale(0.98); }
+
+        /* Grid Controls */
+        .grid-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .control-item {
+            padding: 0.75rem;
+            background-color: #f1f5f9;
+            border-radius: 1rem;
+            border: 1px solid #f8fafc;
+        }
+
+        .control-item span {
+            display: block;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        select {
+            width: 100%;
+            background: transparent;
+            border: none;
+            font-weight: 600;
+            outline: none;
+        }
+
+        /* Result Section */
+        #resultArea {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            display: none;
+        }
+
+        .qr-frame {
+            display: inline-block;
+            padding: 1rem;
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.06);
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .qr-frame img { width: 180px; height: 180px; }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .btn-black { background-color: #0f172a; color: white; border: none; }
+        .btn-light { background-color: var(--indigo-light); color: var(--primary); border: none; }
+
+        /* AI Box */
+        #aiSummaryBox {
+            background-color: var(--indigo-light);
+            border: 1px solid #c7d2fe;
+            padding: 1rem;
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: #3730a3;
+            display: none;
+        }
+
+        /* Scanner Specific */
+        #scannerView { display: none; }
+
+        .scan-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .scan-opt-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1.5rem;
+            border-radius: 1.25rem;
+            border: 2px solid var(--border);
+            background-color: #f1f5f9;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .scan-opt-btn:hover { border-color: var(--primary); background-color: var(--indigo-light); }
+
+        #videoContainer {
+            position: relative;
+            border-radius: 1rem;
+            overflow: hidden;
+            background: black;
+            aspect-ratio: 1/1;
+            max-width: 320px;
+            margin: 0 auto 1.5rem;
+            display: none;
+        }
+
+        video { width: 100%; height: 100%; object-fit: cover; }
+
+        .scan-overlay {
+            position: absolute;
+            inset: 0;
+            border: 30px solid rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scan-box {
+            width: 160px;
+            height: 160px;
+            border: 2px solid #818cf8;
+            border-radius: 0.5rem;
+            position: relative;
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #818cf8;
+            animation: scanAnim 2s linear infinite;
+        }
+
+        @keyframes scanAnim {
+            0% { top: 0; }
+            50% { top: 100%; }
+            100% { top: 0; }
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 4rem;
+            text-align: center;
+            padding-bottom: 3rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 1rem;
+            background-color: var(--indigo-light);
+            color: var(--primary);
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+
+        .footer-text { color: var(--text-muted); font-size: 0.875rem; }
+        .author { font-weight: 900; color: #475569; text-transform: uppercase; margin-top: 0.25rem; letter-spacing: 0.1em; }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 480px) {
+            h1 { font-size: 1.75rem; }
+            .grid-controls { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="logo-icon">
+                <i data-lucide="qr-code" style="width: 40px; height: 40px;"></i>
+            </div>
+            <h1>AS QR Master ✨</h1>
+            <p class="subtitle">Enhanced with Gemini AI Intelligence</p>
+        </header>
+
+        <div class="tabs-container">
+            <button onclick="switchTab('generator')" id="genTab" class="tab-btn active">Generator</button>
+            <button onclick="switchTab('scanner')" id="scanTab" class="tab-btn">Scanner</button>
+        </div>
+
+        <main class="card">
+            <!-- GENERATOR VIEW -->
+            <div id="generatorView">
+                <div class="form-group">
+                    <div class="label-row">
+                        <label>Content Source</label>
+                        <div style="display: flex; gap: 8px;">
+                            <button onclick="aiRefine()" id="aiBtn" class="btn-ai">
+                                <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i> AI Refine
+                            </button>
+                            <button onclick="clearForm()" class="btn-ai" style="color: var(--text-muted);">
+                                <i data-lucide="rotate-ccw" style="width: 14px; height: 14px;"></i> Clear
+                            </button>
+                        </div>
+                    </div>
+                    <textarea id="qrInput" placeholder="Paste your URL or text here..."></textarea>
+                </div>
+
+                <div id="aiSummaryBox">
+                    <div style="font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
+                        <i data-lucide="info" style="width: 14px; height: 14px;"></i> AI Insight:
+                    </div>
+                    <p id="aiSummaryText"></p>
+                </div>
+
+                <div class="grid-controls">
+                    <div class="control-item">
+                        <span>QR Color</span>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="color" id="qrColor" value="#000000" style="width: 24px; height: 24px; border: none; background: transparent; cursor: pointer;">
+                            <font id="colorHex" style="font-size: 12px; font-family: monospace;">#000000</font>
+                        </div>
+                    </div>
+                    <div class="control-item">
+                        <span>Image Size</span>
+                        <select id="qrSize">
+                            <option value="250">Medium (250px)</option>
+                            <option value="400">Large (400px)</option>
+                            <option value="150">Small (150px)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button onclick="generateQR()" id="genBtn" class="btn-primary">
+                    <i data-lucide="zap" style="width: 20px; height: 20px;"></i> Generate QR Code
+                </button>
+
+                <div id="resultArea">
+                    <div class="qr-frame">
+                        <img id="qrDisplay" src="" alt="QR Result">
+                    </div>
+                    <div class="action-buttons">
+                        <button onclick="downloadQR()" class="btn-secondary btn-black">
+                            <i data-lucide="download" style="width: 18px; height: 18px;"></i> Download
+                        </button>
+                        <button onclick="copyText()" class="btn-secondary btn-light">
+                            <i data-lucide="copy" style="width: 18px; height: 18px;"></i> Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCANNER VIEW -->
+            <div id="scannerView">
+                <div class="scan-grid">
+                    <button onclick="toggleCamera()" id="camBtn" class="scan-opt-btn" style="color: var(--primary);">
+                        <i data-lucide="camera" style="width: 32px; height: 32px;"></i>
+                        <span style="font-weight: 700;">Scan Live</span>
+                    </button>
+                    <button onclick="document.getElementById('fileInput').click()" class="scan-opt-btn" style="color: var(--text-muted);">
+                        <i data-lucide="upload" style="width: 32px; height: 32px;"></i>
+                        <span style="font-weight: 700;">Upload File</span>
+                        <input type="file" id="fileInput" class="hidden" accept="image/*" onchange="handleFileUpload(event)">
+                    </button>
+                </div>
+
+                <div id="videoContainer">
+                    <video id="video"></video>
+                    <div class="scan-overlay">
+                        <div class="scan-box">
+                            <div class="scan-line"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="scanResultBox" class="hidden" style="background-color: var(--indigo-light); padding: 1rem; border-radius: 1rem; border: 1px solid #c7d2fe;">
+                    <h3 style="font-size: 0.875rem; font-weight: 700; color: #3730a3; margin-bottom: 0.5rem;">Decoded Content:</h3>
+                    <div id="decodedText" style="background: white; padding: 0.75rem; border-radius: 0.75rem; font-family: monospace; font-size: 0.8rem; word-break: break-all; margin-bottom: 1rem; border: 1px solid #e2e8f0;"></div>
+                    <div class="action-buttons">
+                        <button onclick="copyDecoded()" class="btn-secondary btn-light" style="background: white; border: 1px solid #e2e8f0;">Copy</button>
+                        <button onclick="aiSummarizeScan()" id="aiSumBtn" class="btn-secondary btn-black" style="font-size: 0.75rem;">AI Summary</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="badge">
+                <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i> Gemini 2.5 Flash
+            </div>
+            <div class="footer-text">
+                <p>© 2026 AS QR Master • Professional Suite</p>
+                <p class="author">Made By AS industry</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // --- STATE & CONFIG ---
+        const apiKey = ""; 
+        let activeTab = 'generator';
+        let scanning = false;
+        let stream = null;
+
+        // Sync Color Hex Label
+        document.getElementById('qrColor').addEventListener('input', (e) => {
+            document.getElementById('colorHex').innerText = e.target.value.toUpperCase();
+        });
+
+        // --- TABS ---
+        function switchTab(tab) {
+            activeTab = tab;
+            const genBtn = document.getElementById('genTab');
+            const scanBtn = document.getElementById('scanTab');
+            const genView = document.getElementById('generatorView');
+            const scanView = document.getElementById('scannerView');
+
+            if (tab === 'generator') {
+                genBtn.classList.add('active');
+                scanBtn.classList.remove('active');
+                genView.style.display = 'block';
+                scanView.style.display = 'none';
+                stopCamera();
+            } else {
+                scanBtn.classList.add('active');
+                genBtn.classList.remove('active');
+                scanView.style.display = 'block';
+                genView.style.display = 'none';
+            }
+        }
+
+        // --- GENERATOR LOGIC ---
+        function generateQR() {
+            const input = document.getElementById('qrInput').value.trim();
+            if (!input) {
+                alert("Pehle kuch text ya link daalein!");
+                return;
+            }
+
+            const size = document.getElementById('qrSize').value;
+            const color = document.getElementById('qrColor').value.substring(1);
+            const display = document.getElementById('qrDisplay');
+            const result = document.getElementById('resultArea');
+
+            display.src = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(input)}&color=${color}`;
+            result.style.display = 'block';
+            result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function clearForm() {
+            document.getElementById('qrInput').value = '';
+            document.getElementById('resultArea').style.display = 'none';
+            document.getElementById('aiSummaryBox').style.display = 'none';
+        }
+
+        async function downloadQR() {
+            const img = document.getElementById('qrDisplay');
+            const res = await fetch(img.src);
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `qr-code-${Date.now()}.png`;
+            a.click();
+        }
+
+        function copyText() {
+            const val = document.getElementById('qrInput').value;
+            navigator.clipboard.writeText(val);
+            alert("Copy ho gaya!");
+        }
+
+        // --- GEMINI AI ---
+        async function callGemini(prompt, system) {
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        systemInstruction: { parts: [{ text: system }] }
+                    })
+                });
+                const data = await response.json();
+                return data.candidates?.[0]?.content?.parts?.[0]?.text;
+            } catch (err) {
+                return null;
+            }
+        }
+
+        async function aiRefine() {
+            const input = document.getElementById('qrInput').value;
+            if(!input) return;
+            const btn = document.getElementById('aiBtn');
+            btn.innerHTML = '<font style="animation: spin 1s linear infinite;">↻</font> Checking...';
+            
+            const summary = await callGemini(input, "Provide a 1-sentence description of this. Be brief.");
+            if(summary) {
+                document.getElementById('aiSummaryText').innerText = summary;
+                document.getElementById('aiSummaryBox').style.display = 'block';
+                lucide.createIcons();
+            }
+            btn.innerHTML = '<i data-lucide="sparkles" style="width: 14px; height: 14px;"></i> AI Refine';
+            lucide.createIcons();
+        }
+
+        async function aiSummarizeScan() {
+            const text = document.getElementById('decodedText').innerText;
+            const btn = document.getElementById('aiSumBtn');
+            btn.innerText = "Processing...";
+            const summary = await callGemini(text, "Summarize this decoded QR content in 1 simple sentence.");
+            if(summary) alert("AI Summary: " + summary);
+            btn.innerHTML = "AI Summary";
+        }
+
+        // --- SCANNER LOGIC ---
+        async function toggleCamera() {
+            if (scanning) stopCamera();
+            else startCamera();
+        }
+
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                const video = document.getElementById('video');
+                video.srcObject = stream;
+                video.setAttribute("playsinline", true);
+                video.play();
+                document.getElementById('videoContainer').style.display = 'block';
+                const camBtn = document.getElementById('camBtn');
+                camBtn.style.color = "#ef4444";
+                camBtn.innerHTML = '<i data-lucide="square" style="width: 32px; height: 32px;"></i><span style="font-weight: 700;">Stop Scan</span>';
+                lucide.createIcons();
+                scanning = true;
+                requestAnimationFrame(tick);
+            } catch (err) {
+                alert("Camera access nahi mila.");
+            }
+        }
+
+        function stopCamera() {
+            if (stream) stream.getTracks().forEach(t => t.stop());
+            document.getElementById('videoContainer').style.display = 'none';
+            const camBtn = document.getElementById('camBtn');
+            camBtn.style.color = "var(--primary)";
+            camBtn.innerHTML = '<i data-lucide="camera" style="width: 32px; height: 32px;"></i><span style="font-weight: 700;">Scan Live</span>';
+            lucide.createIcons();
+            scanning = false;
+        }
+
+        function tick() {
+            if (scanning) {
+                const video = document.getElementById('video');
+                if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                    const canvas = document.createElement("canvas");
+                    canvas.height = video.videoHeight;
+                    canvas.width = video.videoWidth;
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height);
+                    if (code) {
+                        showScanResult(code.data);
+                        stopCamera();
+                        return;
+                    }
+                }
+                requestAnimationFrame(tick);
+            }
+        }
+
+        function showScanResult(text) {
+            document.getElementById('decodedText').innerText = text;
+            document.getElementById('scanResultBox').classList.remove('hidden');
+        }
+
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    canvas.width = img.width; canvas.height = img.height;
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0);
+                    const code = jsQR(ctx.getImageData(0,0,canvas.width,canvas.height).data, canvas.width, canvas.height);
+                    if(code) showScanResult(code.data);
+                    else alert("Is image mein QR code nahi mila.");
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function copyDecoded() {
+            const t = document.getElementById('decodedText').innerText;
+            navigator.clipboard.writeText(t);
+            alert("Copy ho gaya!");
+        }
+    </script>
+</body>
+</html>
