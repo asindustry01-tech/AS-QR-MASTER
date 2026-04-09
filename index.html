@@ -3,326 +3,523 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AS QR Master - Enhanced with AI</title>
+    <title>AS QR Master - Professional AI Suite</title>
     
-    <!-- Scripts -->
+    <!-- External Resources -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
+    <!-- Custom Professional Styling -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #F8FAFC;
-            color: #1E293B;
+        :root {
+            --brand-primary: #4F46E5;
+            --brand-secondary: #6366F1;
+            --bg-soft: #F8FAFC;
         }
 
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-soft);
+            color: #1E293B;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Glassmorphism Classes */
         .glass-container {
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             border-radius: 40px;
             border: 1px solid #E2E8F0;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.03);
         }
 
         .tab-bg {
             background: #E2E8F0;
             padding: 6px;
-            border-radius: 20px;
+            border-radius: 24px;
         }
 
         .tab-btn {
-            padding: 12px 24px;
-            border-radius: 16px;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            padding: 12px 10px;
+            border-radius: 18px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #64748B;
         }
 
         .tab-btn.active {
             background: white;
-            color: #4F46E5;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            color: var(--brand-primary);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
         }
 
+        /* Input Cards Style */
         .input-card {
             background: #F1F5F9;
-            border-radius: 24px;
-            border: 1px solid transparent;
-            transition: all 0.2s;
+            border-radius: 28px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
         }
 
         .input-card:focus-within {
-            border-color: #4F46E5;
+            border-color: var(--brand-primary);
             background: white;
-            box-shadow: 0 0 0 4px rgba(79, 70, 225, 0.1);
+            box-shadow: 0 10px 25px rgba(79, 70, 225, 0.08);
         }
 
-        .scan-option-card {
-            background: #F8FAFC;
-            border: 1px solid #E2E8F0;
-            border-radius: 24px;
-            transition: all 0.2s;
+        /* File Drop Area */
+        .drop-area {
+            border: 2px dashed #CBD5E1;
+            border-radius: 32px;
+            transition: all 0.3s;
             cursor: pointer;
         }
 
-        .scan-option-card:hover {
-            border-color: #4F46E5;
-            transform: translateY(-2px);
+        .drop-area.active {
+            border-color: var(--brand-primary);
+            background: #EEF2FF;
+            transform: scale(1.02);
         }
 
+        /* Buttons and Interactive Elements */
         .btn-primary {
-            background: #4F46E5;
+            background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
             color: white;
-            border-radius: 20px;
-            font-weight: 700;
+            border-radius: 22px;
+            font-weight: 800;
             transition: all 0.3s;
-            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
+            box-shadow: 0 12px 24px rgba(79, 70, 229, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(79, 70, 229, 0.35);
         }
 
         .btn-primary:active {
-            transform: scale(0.98);
+            transform: scale(0.97);
         }
 
         .badge-ai {
-            background: #EEF2FF;
-            color: #4F46E5;
-            padding: 6px 16px;
+            background: linear-gradient(to right, #EEF2FF, #E0E7FF);
+            color: var(--brand-primary);
+            padding: 8px 18px;
             border-radius: 50px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 800;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
             text-transform: uppercase;
+            border: 1px solid #C7D2FE;
+        }
+
+        /* Animations */
+        @keyframes scanMove {
+            0% { transform: translateY(0); opacity: 0.5; }
+            50% { transform: translateY(280px); opacity: 1; }
+            100% { transform: translateY(0); opacity: 0.5; }
         }
 
         .scan-line {
-            height: 2px;
-            background: #4F46E5;
-            box-shadow: 0 0 15px #4F46E5;
-            animation: scanMove 2s linear infinite;
-        }
-
-        @keyframes scanMove {
-            0% { top: 0; }
-            50% { top: 100%; }
-            100% { top: 0; }
+            height: 3px;
+            background: var(--brand-primary);
+            box-shadow: 0 0 20px 2px var(--brand-primary);
+            width: 100%;
+            position: absolute;
+            z-index: 10;
+            animation: scanMove 3s infinite ease-in-out;
         }
 
         #toast {
             position: fixed;
-            bottom: 2rem;
+            bottom: 2.5rem;
             left: 50%;
-            transform: translateX(-50%);
-            background: #1E293B;
+            transform: translateX(-50%) translateY(100px);
+            background: #0F172A;
             color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
+            padding: 16px 32px;
+            border-radius: 20px;
             font-weight: 600;
             font-size: 14px;
-            display: none;
-            z-index: 1000;
+            z-index: 9999;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
         }
+
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+
+        .loader-ring {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .file-icon-pulse {
+            animation: iconPulse 2s infinite;
+        }
+
+        @keyframes iconPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-6">
+<body class="min-h-screen flex flex-col items-center py-12 px-4 md:px-10">
 
-    <div id="toast">Copied to clipboard!</div>
+    <!-- Notification Toast -->
+    <div id="toast">
+        <i data-lucide="info" size="18" class="text-indigo-400"></i>
+        <span id="toastMsg">Action Successful</span>
+    </div>
 
-    <div class="w-full max-w-xl">
-        <!-- Brand Header -->
+    <!-- Main Container -->
+    <div class="w-full max-w-2xl">
+        
+        <!-- App Branding -->
         <div class="text-center mb-10">
-            <div class="inline-block p-5 bg-indigo-600 rounded-[30px] shadow-2xl shadow-indigo-200 mb-6 transform -rotate-3">
-                <i data-lucide="qr-code" class="text-white w-10 h-10"></i>
+            <div class="relative inline-block">
+                <div class="p-6 bg-indigo-600 rounded-[35px] shadow-2xl shadow-indigo-200 mb-6 transform -rotate-6 transition-transform hover:rotate-0 cursor-pointer">
+                    <i data-lucide="qr-code" class="text-white w-12 h-12"></i>
+                </div>
+                <div class="absolute -top-2 -right-2 bg-amber-400 p-2 rounded-full shadow-lg">
+                    <i data-lucide="sparkles" size="16" class="text-white fill-white"></i>
+                </div>
             </div>
-            <h1 class="text-5xl font-extrabold tracking-tight mb-2">
-                AS QR Master <span class="text-indigo-500">✨</span>
+            <h1 class="text-5xl font-extrabold tracking-tight mb-3 text-slate-800">
+                AS QR Master <span class="text-indigo-600">Pro</span>
             </h1>
-            <p class="text-slate-500 font-medium">Enhanced with Gemini AI Intelligence</p>
+            <p class="text-slate-500 font-medium text-lg">Precision Engineering for QR Solutions</p>
         </div>
 
-        <!-- Navigation Tabs -->
-        <div class="tab-bg flex mb-8">
+        <!-- Navigation Tabs (Expanded) -->
+        <div class="tab-bg flex gap-1 mb-10">
             <button onclick="switchTab('gen')" id="tabGen" class="tab-btn active flex-1">Generator</button>
-            <button onclick="switchTab('scan')" id="tabScan" class="tab-btn flex-1 text-slate-500">Scanner</button>
+            <button onclick="switchTab('file')" id="tabFile" class="tab-btn flex-1">File</button>
+            <button onclick="switchTab('scan')" id="tabScan" class="tab-btn flex-1">Scanner</button>
         </div>
 
-        <!-- Generator View -->
-        <div id="viewGen" class="glass-container p-8 space-y-8 animate-in fade-in duration-500">
-            <div class="space-y-4">
+        <!-- SECTION: GENERATOR -->
+        <div id="viewGen" class="glass-container p-8 md:p-10 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div class="space-y-6">
                 <div class="flex justify-between items-center px-2">
-                    <span class="font-bold text-slate-700">Content Source</span>
+                    <span class="font-bold text-slate-700 flex items-center gap-2">
+                        <i data-lucide="align-left" size="18"></i> Content Source
+                    </span>
                     <div class="flex gap-4">
-                        <button onclick="aiRefine()" class="text-xs font-bold text-indigo-500 flex items-center gap-1 hover:opacity-70">
-                            <i data-lucide="sparkles" size="14"></i> AI Refine
+                        <button id="aiRefineBtn" onclick="aiRefine()" class="text-xs font-black text-indigo-600 flex items-center gap-1.5 hover:opacity-70 bg-indigo-50 px-3 py-1.5 rounded-full transition-all">
+                            <i data-lucide="wand-2" size="14"></i> <span id="refineText">AI Refine</span>
                         </button>
-                        <button onclick="resetAll()" class="text-xs font-bold text-slate-400 flex items-center gap-1 hover:text-red-500">
-                            <i data-lucide="rotate-ccw" size="14"></i> Clear
+                        <button onclick="resetAll()" class="text-xs font-bold text-slate-400 flex items-center gap-1.5 hover:text-red-500">
+                            <i data-lucide="trash-2" size="14"></i> Clear
                         </button>
                     </div>
                 </div>
                 
-                <div class="input-card p-4">
+                <div class="input-card p-6">
                     <textarea id="qrInput" placeholder="Paste your URL or text here..." 
-                        class="w-full bg-transparent outline-none min-h-[140px] resize-none text-lg font-medium placeholder:text-slate-400"></textarea>
+                        class="w-full bg-transparent outline-none min-h-[160px] resize-none text-xl font-medium placeholder:text-slate-300 leading-relaxed"></textarea>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="input-card p-4">
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">QR Color</label>
-                        <div class="flex items-center gap-3">
-                            <input type="color" id="qrColor" value="#000000" class="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-none">
-                            <span id="colorHex" class="text-sm font-mono font-bold text-slate-600">#000000</span>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="input-card p-5">
+                        <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">QR Design Color</label>
+                        <div class="flex items-center gap-4">
+                            <div class="relative">
+                                <input type="color" id="qrColor" value="#000000" class="w-12 h-12 rounded-xl cursor-pointer bg-transparent border-none appearance-none">
+                            </div>
+                            <span id="colorHex" class="text-lg font-mono font-bold text-slate-700">#000000</span>
                         </div>
                     </div>
-                    <div class="input-card p-4">
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Image Size</label>
-                        <select id="qrSize" class="w-full bg-transparent outline-none font-bold text-slate-700 appearance-none">
-                            <option value="250">Medium (250px)</option>
-                            <option value="150">Small (150px)</option>
-                            <option value="400">Large (400px)</option>
-                        </select>
+                    <div class="input-card p-5">
+                        <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">Output Resolution</label>
+                        <div class="relative">
+                            <select id="qrSize" class="w-full bg-transparent outline-none font-bold text-slate-700 appearance-none text-lg">
+                                <option value="300">Standard (300px)</option>
+                                <option value="200">Compact (200px)</option>
+                                <option value="500">High Def (500px)</option>
+                                <option value="800">Ultra (800px)</option>
+                            </select>
+                            <i data-lucide="chevron-down" class="absolute right-0 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size="18"></i>
+                        </div>
                     </div>
                 </div>
 
-                <button onclick="generateQR()" class="w-full btn-primary py-5 text-lg flex items-center justify-center gap-3">
-                    <i data-lucide="zap" size="22"></i> Generate QR Code
+                <button onclick="generateQR()" class="w-full btn-primary py-6 text-xl flex items-center justify-center gap-4 group">
+                    <i data-lucide="zap" size="24" class="group-hover:animate-pulse"></i> Generate Professional QR
                 </button>
             </div>
 
-            <!-- QR Display Area -->
-            <div id="qrResult" class="hidden flex flex-col items-center pt-6 border-t border-slate-100 animate-in zoom-in duration-300">
-                <div class="p-6 bg-white rounded-[40px] shadow-inner border border-slate-50 mb-8" id="qrcode"></div>
-                <div class="flex gap-3 w-full">
-                    <button onclick="downloadQR()" class="flex-1 bg-slate-900 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2">
-                        <i data-lucide="download" size="20"></i> Save
+            <!-- Result Showcase -->
+            <div id="qrResult" class="hidden flex flex-col items-center pt-10 border-t-2 border-slate-50 animate-in zoom-in duration-500">
+                <div class="p-8 bg-white rounded-[45px] shadow-2xl border-2 border-slate-100 mb-10 transform transition-transform hover:scale-105" id="qrcode"></div>
+                <div class="flex flex-col sm:flex-row gap-4 w-full">
+                    <button onclick="downloadQR()" class="flex-1 bg-slate-900 text-white py-5 rounded-[22px] font-bold flex items-center justify-center gap-3 hover:bg-black transition-all">
+                        <i data-lucide="download-cloud" size="22"></i> Save to Gallery
                     </button>
-                    <button onclick="copyLink()" class="flex-1 bg-indigo-50 text-indigo-600 py-4 rounded-2xl font-bold flex items-center justify-center gap-2">
-                        <i data-lucide="copy" size="20"></i> Copy
+                    <button onclick="copyLink()" class="flex-1 bg-indigo-50 text-indigo-700 py-5 rounded-[22px] font-bold flex items-center justify-center gap-3 hover:bg-indigo-100 transition-all border border-indigo-100">
+                        <i data-lucide="clipboard" size="22"></i> Copy Data
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Scanner View -->
-        <div id="viewScan" class="hidden glass-container p-8 animate-in fade-in duration-500">
-            <div class="grid grid-cols-2 gap-6 mb-8" id="scanOptions">
-                <div onclick="toggleScanner()" class="scan-option-card p-10 flex flex-col items-center justify-center gap-4 group">
-                    <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm text-indigo-500 group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                        <i data-lucide="camera" size="32"></i>
-                    </div>
-                    <span class="font-bold text-indigo-600">Scan Live</span>
+        <!-- SECTION: FILE NAME (NEW) -->
+        <div id="viewFile" class="hidden glass-container p-8 md:p-10 space-y-8 animate-in fade-in duration-500">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-slate-800">File to Identity</h2>
+                <p class="text-slate-500 text-sm">Extract file names and info to QR code instantly</p>
+            </div>
+
+            <div id="fileDropZone" onclick="document.getElementById('fileIdentityInput').click()" 
+                 class="drop-area p-16 flex flex-col items-center justify-center gap-6 group">
+                <div class="w-24 h-24 bg-white rounded-[30px] flex items-center justify-center shadow-md text-indigo-500 group-hover:bg-indigo-600 group-hover:text-white transition-all file-icon-pulse">
+                    <i data-lucide="file-text" size="48"></i>
                 </div>
-                <div onclick="document.getElementById('fileInput').click()" class="scan-option-card p-10 flex flex-col items-center justify-center gap-4 group">
-                    <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm text-indigo-500 group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                        <i data-lucide="upload" size="32"></i>
+                <div class="text-center">
+                    <p class="font-bold text-xl text-slate-700 mb-1">Upload your file here</p>
+                    <p class="text-slate-400 font-medium">Any format up to 20MB</p>
+                </div>
+                <input type="file" id="fileIdentityInput" class="hidden" onchange="processFileForName(event)">
+            </div>
+
+            <div id="fileInfoCard" class="hidden bg-slate-50 border-2 border-slate-200 rounded-[30px] p-6 space-y-4">
+                <div class="flex items-center gap-4">
+                    <div class="p-4 bg-white rounded-2xl text-indigo-500">
+                        <i data-lucide="file-check" size="28"></i>
                     </div>
-                    <span class="font-bold text-indigo-600">Upload File</span>
-                    <input type="file" id="fileInput" class="hidden" accept="image/*" onchange="handleFileUpload(event)">
+                    <div class="overflow-hidden">
+                        <p id="selectedFileName" class="font-bold text-slate-800 truncate text-lg">filename.pdf</p>
+                        <p id="selectedFileSize" class="text-slate-400 font-medium text-sm">2.4 MB</p>
+                    </div>
+                </div>
+                <div class="pt-4 border-t border-slate-200 flex gap-2">
+                    <button onclick="generateFileQR()" class="flex-1 btn-primary py-4 rounded-2xl flex items-center justify-center gap-2">
+                        <i data-lucide="qr-code" size="18"></i> Convert to QR
+                    </button>
+                    <button onclick="resetFileTab()" class="p-4 bg-white text-red-500 border border-slate-200 rounded-2xl hover:bg-red-50">
+                        <i data-lucide="x" size="20"></i>
+                    </button>
                 </div>
             </div>
 
-            <div id="videoContainer" class="hidden relative aspect-square max-w-[340px] mx-auto rounded-[40px] overflow-hidden border-8 border-slate-50 shadow-2xl mb-6">
+            <div class="bg-amber-50 border border-amber-100 rounded-2xl p-5 flex items-start gap-3">
+                <i data-lucide="info" class="text-amber-500 mt-0.5" size="20"></i>
+                <p class="text-xs text-amber-700 leading-relaxed font-medium">
+                    This feature allows you to quickly generate a QR code containing the name and basic info of any file. Simply upload your file, and we'll extract its name, size, and type to create a QR code that can be scanned for instant identification. Perfect for organizing physical files or sharing file details without sending the actual file.
+                </p>
+            </div>
+        </div>
+
+        <!-- SECTION: SCANNER -->
+        <div id="viewScan" class="hidden glass-container p-8 md:p-10 animate-in fade-in duration-500">
+            <div id="scanOptions" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div onclick="toggleScanner()" class="scan-option-card p-12 flex flex-col items-center justify-center gap-5 group bg-slate-50">
+                    <div class="w-20 h-20 bg-white rounded-3xl flex items-center justify-center shadow-md text-indigo-500 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                        <i data-lucide="camera" size="40"></i>
+                    </div>
+                    <span class="font-black text-indigo-700 tracking-wide uppercase text-sm">Start Live Scan</span>
+                </div>
+                <div onclick="document.getElementById('fileScanInput').click()" class="scan-option-card p-12 flex flex-col items-center justify-center gap-5 group bg-slate-50">
+                    <div class="w-20 h-20 bg-white rounded-3xl flex items-center justify-center shadow-md text-indigo-500 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                        <i data-lucide="image-plus" size="40"></i>
+                    </div>
+                    <span class="font-black text-indigo-700 tracking-wide uppercase text-sm">Scan from Image</span>
+                    <input type="file" id="fileScanInput" class="hidden" accept="image/*" onchange="handleFileUpload(event)">
+                </div>
+            </div>
+
+            <!-- Video Interface -->
+            <div id="videoContainer" class="hidden relative aspect-square max-w-[400px] mx-auto rounded-[50px] overflow-hidden border-[12px] border-slate-100 shadow-2xl mb-8 group">
                 <video id="preview" playsinline class="w-full h-full object-cover"></video>
-                <div class="absolute inset-0 p-12 flex items-center justify-center">
-                    <div class="w-full h-full border-2 border-white/40 rounded-3xl relative overflow-hidden">
-                        <div class="scan-line absolute w-full"></div>
+                <div class="absolute inset-0 p-16 flex items-center justify-center pointer-events-none">
+                    <div class="w-full h-full border-2 border-white/50 rounded-[40px] relative">
+                        <div class="scan-line"></div>
                     </div>
                 </div>
-                <button onclick="stopScanner()" class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-red-500 text-white px-6 py-2 rounded-full font-bold text-xs">Stop</button>
+                <button onclick="stopScanner()" class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-full font-black text-xs shadow-xl transition-all">
+                    ABORT SCAN
+                </button>
             </div>
 
-            <div id="scanResultBox" class="hidden bg-emerald-50 rounded-3xl p-6 border border-emerald-100">
-                <div class="flex justify-between items-center mb-3">
-                    <span class="badge-ai" style="background: #D1FAE5; color: #059669">Result Found</span>
-                    <button onclick="resetScannerUI()" class="text-slate-400 hover:text-red-500"><i data-lucide="x" size="18"></i></button>
-                </div>
-                <p id="scanText" class="font-mono text-sm text-slate-700 break-all leading-relaxed bg-white/50 p-4 rounded-xl border border-emerald-50 mb-4"></p>
-                
-                <div class="flex flex-col gap-2">
-                    <button id="openLinkBtn" onclick="openScannedLink()" class="hidden w-full bg-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-100">
-                        <i data-lucide="external-link" size="20"></i> Open Link
+            <!-- Scan Result Display -->
+            <div id="scanResultBox" class="hidden bg-emerald-50 rounded-[40px] p-8 border-2 border-emerald-100 shadow-lg animate-in zoom-in duration-300">
+                <div class="flex justify-between items-center mb-5">
+                    <span class="badge-ai" style="background: #D1FAE5; color: #059669; border-color: #A7F3D0">
+                        <i data-lucide="check-circle" size="14" class="inline mr-1"></i> Data Decoded
+                    </span>
+                    <button onclick="resetScannerUI()" class="p-2 text-slate-400 hover:bg-white rounded-full transition-all">
+                        <i data-lucide="refresh-cw" size="20"></i>
                     </button>
-                    <button onclick="copyScanned()" class="w-full bg-white text-slate-700 py-4 rounded-2xl font-bold border border-slate-200 shadow-sm flex items-center justify-center gap-2">
-                        <i data-lucide="copy" size="20"></i> Copy Text
+                </div>
+                <div class="bg-white/80 p-6 rounded-3xl border border-emerald-50 mb-6 shadow-sm overflow-hidden">
+                    <p id="scanText" class="font-mono text-base text-slate-700 break-all leading-relaxed"></p>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button id="openLinkBtn" onclick="openScannedLink()" class="hidden bg-indigo-600 text-white py-5 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-indigo-100 hover:bg-indigo-700">
+                        <i data-lucide="external-link" size="22"></i> Open Link
+                    </button>
+                    <button onclick="copyScanned()" class="bg-white text-slate-700 py-5 rounded-2xl font-bold border-2 border-slate-100 shadow-sm flex items-center justify-center gap-2 hover:bg-slate-50">
+                        <i data-lucide="copy" size="22"></i> Copy Text
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Footer Info -->
-        <div class="mt-12 text-center space-y-6">
-            <div>
-                <span class="badge-ai">
-                    <i data-lucide="sparkles" size="14" class="inline mr-1"></i> Gemini 2.5 Flash
-                </span>
+        <!-- Footer -->
+        <div class="mt-16 text-center space-y-8">
+            <div class="flex justify-center">
+                <div class="badge-ai flex items-center gap-2 py-3 px-6">
+                    <div class="w-2 h-2 bg-indigo-500 rounded-full animate-ping"></div>
+                    <i data-lucide="cpu" size="16"></i> Gemini 2.5 Flash Core Active
+                </div>
             </div>
-            <div class="text-slate-400 text-sm font-medium">
-                <p>© 2026 AS QR Master • Professional Suite</p>
-                <p class="font-black mt-2 text-slate-900 tracking-[0.2em] uppercase text-xs">Made By AS Industry</p>
+            <div class="text-slate-400 text-sm font-semibold tracking-wide">
+                <p>© 2026 AS QR Master • Integrated Professional Solution</p>
+                <div class="flex items-center justify-center gap-3 mt-4">
+                    <div class="h-px w-8 bg-slate-200"></div>
+                    <p class="font-black text-slate-900 tracking-[0.4em] uppercase text-[10px]">Made By AS Industry</p>
+                    <div class="h-px w-8 bg-slate-200"></div>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Scripting Engine -->
     <script>
         lucide.createIcons();
-        const apiKey = "";
+        
+        // Configuration
+        const CLOUD_NAME = "ddgn2o9cg";
+        const UPLOAD_PRESET = "qr_auto";
+        const apiKey = "AIzaSyCyGl2CTiyFmHg6C-3W3Kdxctoh7pV1XFY"; // Runtime key placeholder
         const qrContainer = document.getElementById("qrcode");
-        let qrEngine = null;
         let stream = null;
         let isScanning = false;
         let lastScannedData = "";
+        let currentFileData = "";
 
-        // Canvas for high-res extraction
         const scanCanvas = document.createElement("canvas");
         const scanCtx = scanCanvas.getContext("2d", { alpha: false, willReadFrequently: true });
 
-        function showToast(msg) {
+        // --- UI UTILITIES ---
+
+        function showToast(msg, isError = false) {
             const toast = document.getElementById('toast');
-            toast.innerText = msg;
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 2000);
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.innerText = msg;
+            toast.style.color = isError ? '#FF4B4B' : 'white';
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
         }
 
         function copyToClipboard(text) {
             const textArea = document.createElement("textarea");
             textArea.value = text;
             textArea.style.position = "fixed";
-            textArea.style.left = "-9999px";
-            textArea.style.top = "0";
             document.body.appendChild(textArea);
-            textArea.focus();
             textArea.select();
             try {
                 document.execCommand('copy');
                 showToast("Copied to clipboard!");
             } catch (err) {
-                console.error('Copy failed', err);
+                showToast("Failed to copy", true);
             }
             document.body.removeChild(textArea);
         }
+
+     
+
+        // --- TAB NAVIGATION ---
+
+        function switchTab(type) {
+            // Hide all
+            ['Gen', 'File', 'Scan'].forEach(t => {
+                document.getElementById(`view${t}`).classList.add('hidden');
+                document.getElementById(`tab${t}`).classList.remove('active');
+            });
+
+            // Show current
+            document.getElementById(`view${type.charAt(0).toUpperCase() + type.slice(1)}`).classList.remove('hidden');
+            document.getElementById(`tab${type.charAt(0).toUpperCase() + type.slice(1)}`).classList.add('active');
+            
+            // Clean up
+            if (type !== 'scan') stopScanner();
+            lucide.createIcons();
+        }
+
+        // --- GENERATOR LOGIC ---
 
         document.getElementById('qrColor').addEventListener('input', (e) => {
             document.getElementById('colorHex').innerText = e.target.value.toUpperCase();
         });
 
-        function switchTab(type) {
-            document.getElementById('viewGen').classList.toggle('hidden', type !== 'gen');
-            document.getElementById('viewScan').classList.toggle('hidden', type !== 'scan');
-            document.getElementById('tabGen').classList.toggle('active', type === 'gen');
-            document.getElementById('tabScan').classList.toggle('active', type === 'scan');
-            if (type === 'gen') stopScanner();
+        async function aiRefine() {
+            const text = document.getElementById('qrInput').value;
+            if (!text) return showToast("Input empty!", true);
+            
+            const btn = document.getElementById('aiRefineBtn');
+            const label = document.getElementById('refineText');
+            
+            // UI Loading State
+            btn.disabled = true;
+            label.innerHTML = `<div class="loader-ring"></div>`;
+            
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: `Task: Evaluate and refine this QR code content. If it is a URL, fix common typos (like 'htt://' to 'https://'), remove unnecessary tracking parameters, and return ONLY the final cleaned string. If it's plain text, optimize it for readability in a QR scan. Input: ${text}` }] }]
+                    })
+                });
+                
+                const data = await response.json();
+                const refinedText = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || text;
+                
+                document.getElementById('qrInput').value = refinedText;
+                showToast("AI Refined Content!");
+            } catch (e) {
+                console.error(e);
+                showToast("AI Service unavailable", true);
+            } finally {
+                btn.disabled = false;
+                label.innerText = "AI Refine";
+                lucide.createIcons();
+            }
         }
 
         function generateQR() {
-            const input = document.getElementById('qrInput').value;
-            if (!input) return;
+            const input = document.getElementById('qrInput').value.trim();
+            if (!input) return showToast("Enter content first!", true);
             
             const color = document.getElementById('qrColor').value;
             const size = document.getElementById('qrSize').value;
             
             qrContainer.innerHTML = "";
-            qrEngine = new QRCode(qrContainer, {
+            new QRCode(qrContainer, {
                 text: input,
                 width: parseInt(size),
                 height: parseInt(size),
@@ -332,38 +529,109 @@
             });
             
             document.getElementById('qrResult').classList.remove('hidden');
+            showToast("QR Generated!");
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         }
 
-        async function aiRefine() {
-            const text = document.getElementById('qrInput').value;
-            if (!text) return;
+        function downloadQR() {
+            const canvas = qrContainer.querySelector('canvas');
+            if (!canvas) return;
+            const link = document.createElement('a');
+            link.download = `AS-QR-${Date.now()}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        function resetAll() {
+            document.getElementById('qrInput').value = "";
+            document.getElementById('qrResult').classList.add('hidden');
+            showToast("Workspace Reset");
+        }
+
+        // --- FILE IDENTITY LOGIC (UPDATED FOR CLOUDINARY) ---
+
+        async function processFileForName(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // 20MB Check
+            if (file.size > 20 * 1024 * 1024) {
+                return showToast("File too large (Max 20MB)", true);
+            }
+
+            // Keep user's exact original UI classes and element names
+            document.getElementById('selectedFileName').innerText = file.name;
+            document.getElementById('selectedFileSize').innerText = "Uploading to Cloud...";
             
-            document.getElementById('qrInput').value = "AI is refining...";
+            document.getElementById('fileDropZone').classList.add('hidden');
+            document.getElementById('fileInfoCard').classList.remove('hidden');
+            showToast("Cloud pe upload ho raha hai...");
+
+            // Setup Cloudinary Form
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', UPLOAD_PRESET);
+
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: `Shorten and optimize this URL or text for a QR code: ${text}` }] }]
-                    })
+                    body: formData
                 });
+                
                 const data = await response.json();
-                document.getElementById('qrInput').value = data.candidates[0].content.parts[0].text.trim();
-            } catch (e) {
-                document.getElementById('qrInput').value = text;
+                
+                if (data.secure_url) {
+                    // Make it a direct download link
+                    let finalUrl = data.secure_url;
+                    if (finalUrl.includes('/upload/')) {
+                        finalUrl = finalUrl.replace('/upload/', '/upload/fl_attachment/');
+                    }
+                    
+                    // Update variables
+                    currentFileData = finalUrl;
+                    document.getElementById('selectedFileSize').innerText = `${(file.size / (1024 * 1024)).toFixed(2)} MB • Uploaded`;
+                    document.getElementById('qrInput').value = finalUrl;
+                    
+                    showToast("Upload Successful!");
+                    
+                    // Auto switch to Generator and create QR
+                    setTimeout(() => {
+                        switchTab('gen');
+                        generateQR();
+                    }, 800);
+                } else {
+                    throw new Error("Cloudinary Error");
+                }
+            } catch (error) {
+                console.error(error);
+                showToast("Upload Failed. Check Internet/Preset.", true);
+                resetFileTab();
             }
         }
 
+        function generateFileQR() {
+            if (!currentFileData) return;
+            document.getElementById('qrInput').value = currentFileData;
+            switchTab('gen');
+            generateQR();
+        }
+
+        function resetFileTab() {
+            document.getElementById('fileIdentityInput').value = "";
+            currentFileData = "";
+            document.getElementById('fileDropZone').classList.remove('hidden');
+            document.getElementById('fileInfoCard').classList.add('hidden');
+        }
+
+        // --- SCANNER ENGINE ---
+
         async function toggleScanner() {
             try {
-                // Constraints updated for higher resolution to support dense/large QR codes
                 const constraints = { 
                     video: { 
                         facingMode: "environment",
                         width: { ideal: 1280 },
-                        height: { ideal: 720 },
-                        focusMode: "continuous"
+                        height: { ideal: 720 }
                     } 
                 };
                 
@@ -378,8 +646,7 @@
                     requestAnimationFrame(scanTick);
                 };
             } catch (e) {
-                console.error(e);
-                alert("Camera access denied or resolution too high for device.");
+                showToast("Camera Error: Access Denied", true);
             }
         }
 
@@ -388,15 +655,11 @@
             const video = document.getElementById('preview');
             
             if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                // Ensure canvas size matches video aspect
                 scanCanvas.width = video.videoWidth;
                 scanCanvas.height = video.videoHeight;
-                
-                // Draw current frame to hidden canvas for processing
                 scanCtx.drawImage(video, 0, 0, scanCanvas.width, scanCanvas.height);
                 const imgData = scanCtx.getImageData(0, 0, scanCanvas.width, scanCanvas.height);
                 
-                // jsQR processing
                 const code = jsQR(imgData.data, imgData.width, imgData.height, {
                     inversionAttempts: "dontInvert",
                 });
@@ -406,8 +669,7 @@
                     return;
                 }
             }
-            // Reduced frequency slightly to save CPU if needed, but keeping it smooth
-            setTimeout(() => requestAnimationFrame(scanTick), 50);
+            setTimeout(() => requestAnimationFrame(scanTick), 60);
         }
 
         function handleFileUpload(e) {
@@ -425,20 +687,11 @@
                     const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                     const code = jsQR(imgData.data, imgData.width, imgData.height);
                     if (code) showScanResult(code.data);
-                    else alert("No QR code found. Try a clearer image.");
+                    else showToast("No QR detected in image", true);
                 };
                 img.src = event.target.result;
             };
             reader.readAsDataURL(file);
-        }
-
-        function isValidURL(string) {
-            try {
-                new URL(string);
-                return true;
-            } catch (_) {
-                return string.startsWith('http://') || string.startsWith('https://') || string.includes('www.');
-            }
         }
 
         function showScanResult(data) {
@@ -447,22 +700,22 @@
             document.getElementById('scanText').innerText = data;
             
             const openBtn = document.getElementById('openLinkBtn');
-            if (isValidURL(data)) {
-                openBtn.classList.remove('hidden');
-            } else {
-                openBtn.classList.add('hidden');
-            }
+            const isUrl = /^(https?:\/\/|www\.)[^\s]+$/i.test(data);
+            
+            if (isUrl) openBtn.classList.remove('hidden');
+            else openBtn.classList.add('hidden');
 
             document.getElementById('scanResultBox').classList.remove('hidden');
             document.getElementById('scanOptions').classList.add('hidden');
             lucide.createIcons();
+            
+            if (navigator.vibrate) navigator.vibrate(200);
+            showToast("QR Decoded Successfully!");
         }
 
         function openScannedLink() {
             let url = lastScannedData;
-            if (!url.startsWith('http')) {
-                url = 'https://' + url;
-            }
+            if (!url.startsWith('http')) url = 'https://' + url;
             window.open(url, '_blank');
         }
 
@@ -476,20 +729,7 @@
         function resetScannerUI() {
             document.getElementById('scanResultBox').classList.add('hidden');
             document.getElementById('scanOptions').classList.remove('hidden');
-        }
-
-        function resetAll() {
-            document.getElementById('qrInput').value = "";
-            document.getElementById('qrResult').classList.add('hidden');
-        }
-
-        function downloadQR() {
-            const canvas = qrContainer.querySelector('canvas');
-            if (!canvas) return;
-            const link = document.createElement('a');
-            link.download = 'AS-QR-Master.png';
-            link.href = canvas.toDataURL();
-            link.click();
+            document.getElementById('fileScanInput').value = "";
         }
 
         function copyLink() {
@@ -498,8 +738,7 @@
         }
 
         function copyScanned() {
-            const text = document.getElementById('scanText').innerText;
-            copyToClipboard(text);
+            copyToClipboard(lastScannedData);
         }
     </script>
 </body>
